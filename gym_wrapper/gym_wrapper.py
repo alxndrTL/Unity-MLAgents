@@ -24,7 +24,7 @@ class UnityEnvModified(gym.Env):
         base_port = 5005
         if environment_filename is None:
             base_port = UnityEnvironment.DEFAULT_EDITOR_PORT
-            
+        
         self._env = UnityEnvironment(environment_filename, worker_id, base_port, False)
         
         #TODO : add args for timescale, width, height
