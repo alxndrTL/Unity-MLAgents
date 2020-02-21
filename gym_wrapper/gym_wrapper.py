@@ -77,9 +77,9 @@ class UnityEnvModified(gym.Env):
         step_result = self._step(True)
         
         if self._multiagent:
-            return self._multi_step(step_result)
+            return self._multi_step(step_result)[0]
         else:
-            return self._single_step(step_result)
+            return self._single_step(step_result)[0]
         
     def close(self):
         """Override _close in your subclass to perform any necessary cleanup.
