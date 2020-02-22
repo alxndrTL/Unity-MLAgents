@@ -27,7 +27,7 @@ class UnityEnvModified(gym.Env):
         
         self._env = UnityEnvironment(environment_filename, worker_id, base_port, False)
         
-        #TODO : add args for timescale, width, height
+        #TODO : add args for timescale, width, and height
         
         if not self._env.get_agent_groups():
             self._env.step()
