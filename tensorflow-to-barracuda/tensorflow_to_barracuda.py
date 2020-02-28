@@ -1,6 +1,5 @@
 #https://github.com/Unity-Technologies/ml-agents/blob/master/ml-agents/mlagents/trainers/tensorflow_to_barracuda.py
 
-
 from __future__ import print_function
 import numpy as np
 import struct  # convert from Python values and C structs
