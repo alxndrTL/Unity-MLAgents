@@ -57,15 +57,15 @@ class UnityEnvModified(gym.Env):
         if self.group_spec.is_action_discrete():
             branches = self.group_spec.discrete_action_branches
             if self.group_spec.action_shape == 1:
-                self._action_space = spaces.Discrete(branches[0])
+                self.action_space = spaces.Discrete(branches[0])
             else:
-                self._action_space = spaces.MultiDiscrete(branches)
+                self.action_space = spaces.MultiDiscrete(branches)
         else:
             high = np.array([1] * self.group_spec.action_shape)
-            self._action_space = spaces.Box(-high, high, dtype=np.float32)
+            self.action_space = spaces.Box(-high, high, dtype=np.float32)
             
         high = np.array([np.inf] * self._get_vec_obs_size())
-        self._observation_space = spaces.Box(-high, high, dtype=np.float32)
+        self.observation_space = spaces.Box(-high, high, dtype=np.float32)
         
     def reset(self):
         """Resets the state of the environment and returns an initial observation.
