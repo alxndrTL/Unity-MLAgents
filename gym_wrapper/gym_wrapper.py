@@ -98,7 +98,7 @@ class UnityEnvModified(gym.Env):
             observation (object/list): agent's observation of the current environment
             reward (float/list) : amount of reward returned after previous action
             done (boolean/list): whether the episode has ended.
-            info (dict): contains auxiliary diagnostic information, including BatchedStepResult.
+            maxstep (boolean/list): whether the episode has ended because the agent ran out of time.
         """
         
         action = self._sanitize_action(action)
@@ -219,7 +219,7 @@ class UnityEnvModified(gym.Env):
         obs = step_result.obs[0]
         if len(obs.shape) == 2:
             obs = np.concatenate(obs)
-        return (obs, step_result.reward[0], step_result.done[0], {"batched_step_result": step_result})
+        return (obs, step_result.reward[0], step_result.done[0], step_result.max_step[0])
     
     def _multi_step(self, step_result):
         obs = step_result.obs[0]
@@ -228,7 +228,7 @@ class UnityEnvModified(gym.Env):
             for obs_agent in obs:
                 result.append(obs_agent)
             obs = result
-        return (obs, list(step_result.reward), list(step_result.done), {"batched_step_result": step_result})
+        return (obs, list(step_result.reward), list(step_result.done), list(step_result.max_step))
     
     def _get_vec_obs_size(self) -> int:
         result = 0
