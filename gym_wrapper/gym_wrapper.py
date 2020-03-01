@@ -14,7 +14,7 @@ class UnityGymModifiedException(error.Error):
     pass
 
 class UnityEnvModified(gym.Env):
-    def __init__(self, environment_filename, worker_id=0, multiagent=False, no_graphics=False):
+    def __init__(self, environment_filename, worker_id=0, multiagent=False, no_graphics=False, width=80, height=80, time_scale=20.0):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
