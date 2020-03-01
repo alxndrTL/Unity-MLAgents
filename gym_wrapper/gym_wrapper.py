@@ -219,7 +219,7 @@ class UnityEnvModified(gym.Env):
         else:
             self._env.step()
             
-        step_result = self._env.get_step_result(self.brain_name)        
+        step_result = self._env.get_step_result(self.brain_name)
         return self._sanitize_step_result(step_result)
     
     def _single_step(self, step_result):
