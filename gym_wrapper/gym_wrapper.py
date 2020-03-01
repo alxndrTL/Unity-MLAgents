@@ -4,6 +4,7 @@ import gym
 from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.base_env import BatchedStepResult
 
 class UnityGymModifiedException(error.Error):
@@ -17,17 +18,23 @@ class UnityEnvModified(gym.Env):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
-        :param worker_id: Worker number for environment.
-        :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
-        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
+        :param worker_id: Worker number for environment. Default 0.
+        :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done). Default False.
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode. Default False.
+        :param width: Defines the width of the display. Default 80.0.
+        :param height: Defines the height of the display. Default 80.0.
+        :param time_scale: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics might break. Default 1.0.
         """
         base_port = 5005
         if environment_filename is None:
             base_port = UnityEnvironment.DEFAULT_EDITOR_PORT
         
-        self._env = UnityEnvironment(environment_filename, worker_id, base_port, False)
+        channel = EngineConfigurationChannel()
         
-        #TODO : add args for timescale, width, and height
+        self._env = UnityEnvironment(environment_filename, worker_id, base_port, no_graphics=no_graphics, side_channels=[channel])
+        channel.set_configuration_parameters(width=width)
+        channel.set_configuration_parameters(height=height)
+        channel.set_configuration_parameters(time_scale=time_scale)
         
         if not self._env.get_agent_groups():
             self._env.step()
