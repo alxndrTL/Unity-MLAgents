@@ -13,7 +13,7 @@ class UnityGymModifiedException(error.Error):
     """
     pass
 
-class UnityEnvModified(gym.Env):
+class UnityEnvModifiedDP(gym.Env):
     def __init__(self, environment_filename, worker_id=0, multiagent=False, no_graphics=False, width=80, height=80, time_scale=20.0):
         """
         Environment initialization
@@ -53,6 +53,7 @@ class UnityEnvModified(gym.Env):
         self._agents_id = list(self._previous_step_result.agent_id)
         
         self.n_agents = len(self._agents_id)
+        self._n_actions_to_send = self.n_agents
         
         # Check brain configuration
         if len(self._env.get_agent_groups()) != 1:
@@ -207,9 +208,9 @@ class UnityEnvModified(gym.Env):
         return new_step_result
     
     def _sanitize_action(self, action):
-        if self._previous_step_result.n_agents() > len(self._agents_id):
-            [action.insert(0, 0) for i in range(self._previous_step_result.n_agents() - len(self._agents_id))] 
-            return np.array(action).reshape((self._previous_step_result.n_agents(), self.group_spec.action_size))
+        if self._n_actions_to_send > len(self._agents_id):
+            [action.insert(0, 0) for i in range(self._n_actions_to_send - len(action))]
+            return np.array(action).reshape((self._n_actions_to_send, self.group_spec.action_size))
         else:
             return np.array(action).reshape((len(self._agents_id), self.group_spec.action_size))
     
@@ -220,6 +221,22 @@ class UnityEnvModified(gym.Env):
             self._env.step()
             
         step_result = self._env.get_step_result(self.brain_name)
+        
+        self._n_actions_to_send = step_result.n_agents()
+        
+        while step_result.n_agents() - sum(step_result.done) < self.n_agents:
+            self._env.step()
+            step_result_bis = self._env.get_step_result(self.brain_name)
+        
+            step_result.obs[0] = np.append(step_result.obs[0], step_result_bis.obs[0], axis=0)
+            step_result.reward = np.append(step_result.reward, step_result_bis.reward)
+            step_result.done = np.append(step_result.done, step_result_bis.done)
+            step_result.max_step = np.append(step_result.max_step, step_result_bis.max_step)
+            step_result.agent_id = np.append(step_result.agent_id, step_result_bis.agent_id)
+            step_result.action_mask = np.append(step_result.action_mask, step_result_bis.action_mask)
+            
+            self._n_actions_to_send = step_result_bis.n_agents()
+        
         return self._sanitize_step_result(step_result)
     
     def _single_step(self, step_result):
