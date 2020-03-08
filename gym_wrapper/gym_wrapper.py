@@ -1,3 +1,10 @@
+"""
+Gym wrapper for a Unity ML-Agents environment. 
+Currently does not support:
+-multiple brains in the env
+-flattened branch
+"""
+
 import numpy as np
 
 import gym
